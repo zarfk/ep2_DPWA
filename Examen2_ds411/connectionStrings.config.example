@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<connectionStrings>
+	<add name="examen2ds31Entities" connectionString="metadata=res://*/Models.ModelBanca.csdl|res://*/Models.ModelBanca.ssdl|res://*/Models.ModelBanca.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=NOMBRE_DEL_SERVIDOR;initial catalog=NOMBRE_BASE_DE_DATOS;integrated security=True;encrypt=False;MultipleActiveResultSets=True;App=EntityFramework&quot;" providerName="System.Data.EntityClient" />
+</connectionStrings>
+
+<!-- Instrucciones: Copie este archivo a connectionStrings.config -->
+<!-- y reemplaze NOMBRE_DEL_SERVIDOR y NOMBRE_BASE_DE_DATOS con sus valores locales. -->
+<!-- El archivo connectionStrings.config no está en el repositorio por el .gitignore. -->

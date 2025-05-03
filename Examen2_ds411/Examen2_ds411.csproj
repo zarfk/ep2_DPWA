@@ -205,6 +205,8 @@
     <Content Include="Models\ModelBanca.edmx.diagram">
       <DependentUpon>ModelBanca.edmx</DependentUpon>
     </Content>
+    <Content Include="connectionStrings.config" />
+    <Content Include="connectionStrings.config.example" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
