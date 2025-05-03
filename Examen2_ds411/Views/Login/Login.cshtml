@@ -1,0 +1,36 @@
+﻿
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    if (ViewBag.ins == "false")
+    {
+        <script>alert("No se encontro el usuario")</script>
+    }
+    @model Examen2_ds411.Models.cliente
+}
+
+<fieldset>
+    <legend class="text-center">Login</legend>
+    <pre>Bienvenid@@ al sistema de banca</pre>
+
+    @using (Html.BeginForm("login", "Login", FormMethod.Post))
+    {
+        @Html.ValidationSummary("", new { @class = "text-danger" })
+
+
+        @Html.LabelFor(c => c.cod_cliente, null, htmlAttributes: new { @class = "Label label-danger" })
+
+        @Html.TextBoxFor(m => m.cod_cliente, null, htmlAttributes: new { @class = "form-control" })
+
+        @Html.LabelFor(c => c.nit, null, htmlAttributes: new { @class = "Label label-danger" })
+
+        @Html.TextBoxFor(m => m.nit, null, htmlAttributes: new { @class = "form-control" })
+
+
+        <br />
+        <input id="Submit1" type="submit" value="Ingresar" class="btn btn-success" />
+    }
+    <br />
+
+</fieldset>

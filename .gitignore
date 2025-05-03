@@ -1,0 +1,25 @@
+# Connection strings configuration file (local only)
+connectionStrings.config
+
+# User-specific files
+*.suo
+*.user
+
+# Build results
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio cache/metadata
+.vs/
+
+# NuGet Packages (if using packages.config, less common now)
+# packages/
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+
+# Rider specific files (if anyone uses JetBrains Rider)
+#.idea/
