@@ -1,4 +1,5 @@
-﻿
+﻿@model Examen2_ds411.Models.cliente
+
 @{
     ViewBag.Title = "Login";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -7,7 +8,6 @@
     {
         <script>alert("No se encontro el usuario")</script>
     }
-    @model Examen2_ds411.Models.cliente
 }
 
 <fieldset>
@@ -17,7 +17,6 @@
     @using (Html.BeginForm("login", "Login", FormMethod.Post))
     {
         @Html.ValidationSummary("", new { @class = "text-danger" })
-
 
         @Html.LabelFor(c => c.cod_cliente, null, htmlAttributes: new { @class = "Label label-danger" })
 

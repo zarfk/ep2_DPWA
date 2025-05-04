@@ -1,0 +1,55 @@
+﻿
+@{
+    ViewBag.Title = "EstadoCuenta";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<h2>EstadoCuenta</h2>
+
+<script>
+        $(document).ready(function () {
+
+            $.ajax({
+                url: '@Url.Action("GetEstadoCuenta", "Cuenta")',
+                dataType: "JSON",
+                type: "GET"
+            }).done(function (resultado) {
+                var data = JSON.parse(JSON.stringify(resultado));
+                $("#txtNumeroCuenta").text(data.resultado.numeroCuenta);
+                $("#txtNombre").text(data.resultado.nombreCliente);
+                $("#txtSaldo").text(data.resultado.saldo);
+
+            }).fail(function () {
+                alert("Error");
+            });
+        });
+</script>
+
+<div class="card">
+    <div class="card-header">
+        Estado de cuenta
+    </div>
+    <div class="card-body">
+        <h5 class="card-title" id="txtNumeroCuenta"></h5>
+        <pre id="txtNombre"></pre>
+        <p class="card-text text-success" id="txtSaldo">$ </p>
+        <sub> Saldo Disponible</sub>
+        <a href="#" class="btn btn-primary">Movimientos</a>
+    </div>
+</div>
+
+<pre class="p-2">Transaciones</pre>
+
+<div class="card" id="Listatransaciones">
+    <div class="card-header">
+        Tipo de transacion
+    </div>
+    <div class="card-body">
+        <blockquote class="blockquote mb-0">
+            <p>Monto de trasaccion</p>
+            <footer class="blockquote-footer">Fecha <cite title="Source Title"></cite></footer>
+        </blockquote>
+    </div>
+</div>
+

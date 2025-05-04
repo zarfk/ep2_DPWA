@@ -26,9 +26,19 @@ namespace Examen2_ds411.Controllers
                 ViewBag.ins = "true";
                 System.Web.HttpContext.Current.Session["rol"] = C_existente.rol;
                 System.Web.HttpContext.Current.Session["cod_cliente"] = C_existente.cod_cliente;
+                
+                //Segun el usuario 
 
+                if (System.Web.HttpContext.Current.Session["rol"]?.ToString() == "administrador")
+                {
+                    //Cambia a la que sera tu vista principal
+                    return RedirectToAction("Cuenta", "Admin");
+                }
+                else
+                {
+                    return RedirectToAction("EstadoCuenta", "Cliente");
 
-                return RedirectToAction("Index", "Home");
+                }
             }
             else
             {
@@ -38,6 +48,14 @@ namespace Examen2_ds411.Controllers
             
         }
 
+        //Cerrar Secion
+        public ActionResult CerrarSesion()
+        {
+            System.Web.HttpContext.Current.Session["rol"] = null;
+            System.Web.HttpContext.Current.Session["cod_cliente"] = null;
+
+            return RedirectToAction("login");
+        }
 
     }
 }
