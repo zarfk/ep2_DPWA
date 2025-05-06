@@ -10,7 +10,7 @@
 
 <h2>Nueva @TempData["Tipo"]</h2>
 
-@using (Html.BeginForm("GuardarTransaccion", "Cliente", FormMethod.Post, new {id ="new { id = transactionForm"}))
+@using (Html.BeginForm("GuardarTransaccion", "Cliente", FormMethod.Post, new { @onsubmit = "return validarFormulario();" }))
 {
     <div class="form-group">
         @Html.LabelFor(t => t.cod_transac, htmlAttributes: new { @class = "Label" })
@@ -36,6 +36,31 @@
 
     <input type="submit" value="Guardar" class="btn btn-primary" />
 }
+
+
+
+    <!--Solo tiene una validacion 
+        porque los demas campos se llena automaticamente y 
+        el cliente no puede editarlos-->
+
+    <script>
+        function validarFormulario() {
+            var monto = document.getElementById("txtMonto").value.trim();
+
+            if (monto === "") {
+                alert("El campo 'Monto' no puede estar vacío.");
+                return false;
+            }
+
+            if (isNaN(monto) || parseFloat(monto) <= 0) {
+                alert("El monto debe ser un número válido mayor que cero.");
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+
 
 
 

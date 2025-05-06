@@ -19,8 +19,11 @@
             case "limiteDiario":
                 <script>alert("Ha excedido el límite de 10 transacciones por día.")</script>
                 break;
-            case "Error: La cuenta especificada no pertenece a este cliente o no existe.":
+            case "Error":
                 <script>alert("Error: La cuenta especificada no pertenece a este cliente o no existe.")</script>
+                break;
+            case "ErrorData":
+                <script>alert("Ocurrio un error")</script>
                 break;
         }
     }
@@ -93,61 +96,36 @@
 
         transacciones.forEach(function (t) {
 
-            // --- INICIO MODIFICACIÓN ---
-            var fechaRecibida = t.fecha; // Esto es la cadena del JSON, ej: "/Date(1678886400000)/"
+            var fechaRecibida = t.fecha;
             var fechaObjeto = null;
 
             if (fechaRecibida && typeof fechaRecibida === 'string' && fechaRecibida.startsWith('/Date(')) {
-                var milliseconds = parseInt(fechaRecibida.substr(6)); // Extrae los milisegundos
+                var milliseconds = parseInt(fechaRecibida.substr(6));
                 if (!isNaN(milliseconds)) {
-                    fechaObjeto = new Date(milliseconds); // Crea el objeto Date a partir de milisegundos
+                    fechaObjeto = new Date(milliseconds);
                 }
             }
-            // Si usaste Newtonsoft.Json en el servidor con ISO 8601, sería más simple:
-            // if (t.fecha) {
-            //     fechaObjeto = new Date(t.fecha); // JavaScript puede parsear ISO 8601 directamente
-            // }
 
-            // 2. Formatear el objeto Date a una cadena legible (ej: dd/mm/yyyy HH:mm)
-            var fechaFormateada = 'Fecha inválida'; // Valor por defecto si falla el parseo
+            var fechaFormateada = 'Fecha inválida';
 
-            if (fechaObjeto && !isNaN(fechaObjeto.getTime())) { // Verifica que sea un objeto Date válido
-                // Opciones de formato:
-                // a) Manual (ej: dd/mm/yyyy)
-                // var dia = fechaObjeto.getDate().toString().padStart(2, '0');
-                // var mes = (fechaObjeto.getMonth() + 1).toString().padStart(2, '0'); // getMonth() es base 0
-                // var anio = fechaObjeto.getFullYear();
-                // var horas = fechaObjeto.getHours().toString().padStart(2, '0');
-                // var minutos = fechaObjeto.getMinutes().toString().padStart(2, '0');
-                // fechaFormateada = `${dia}/${mes}/${anio} ${horas}:${minutos}`;
+            if (fechaObjeto && !isNaN(fechaObjeto.getTime())) {
 
-                // b) Usando toLocaleDateString y toLocaleTimeString (más fácil, se adapta a la configuración local)
-                // Puedes especificar el locale si quieres un formato específico (ej: 'es-SV')
-                // Para solo fecha:
                 var opcionesFecha = { year: 'numeric', month: '2-digit', day: '2-digit' };
-                // Para solo hora:
-                var opcionesHora = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }; // hour12: false para formato 24h
 
-                var fechaStr = fechaObjeto.toLocaleDateString(undefined, opcionesFecha); // undefined usa el locale por defecto del navegador
+                var opcionesHora = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+
+                var fechaStr = fechaObjeto.toLocaleDateString(undefined, opcionesFecha);
                 var horaStr = fechaObjeto.toLocaleTimeString(undefined, opcionesHora);
 
                 fechaFormateada = `${fechaStr} ${horaStr}`;
 
-                // Si el campo en la base de datos es Nullable y llegó como null, t.fecha será null o undefined.
-                // En ese caso, el `if (fechaRecibida ...)` o `if(t.fecha)` fallará y fechaObjeto será null.
-                // Podemos manejarlo aquí:
-                if (!t.fecha) { // Si la fecha original del JSON es nula o undefined
+                if (!t.fecha) {
                     fechaFormateada = 'Fecha no registrada';
                 }
 
-            } else if (!t.fecha) { // Manejar explícitamente el caso nulo/undefined del servidor
+            } else if (!t.fecha) {
                 fechaFormateada = 'Fecha no registrada';
             }
-
-
-            // --- FIN MODIFICACIÓN ---
-
-            //-------------------------------------------------
 
             var tarjeta = `
             <div class="card mb-2">
