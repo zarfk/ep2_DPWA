@@ -32,10 +32,91 @@ namespace Examen2_ds411.Controllers
                     // Si es administrador
                     return View();
                 }
-
             }
         }
-    
 
+        // Obtener listas de clientes y cuentas
+
+        [HttpGet]
+        public JsonResult GetClientes()
+        {
+            List<cliente> data = contexto.cliente.ToList();
+            List<cliente_str> data2 = new List<cliente_str>();
+
+            foreach (cliente item in data)
+            {
+                cliente_str temp = new cliente_str();
+                temp.cod_cliente = item.cod_cliente;
+                temp.nombre_cliente = item.nombre_cliente;
+                temp.nit = item.nit;
+                temp.rol = item.rol;
+                data2.Add(temp);
+            }
+            return Json(new {resultado = data2}, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public JsonResult GetCuenta(int cod_cliente)
+        {
+            List<cuenta> data = contexto.cuenta.Where(x => x.cod_cliente == cod_cliente).ToList();
+            List<cuenta_str> data2 = new List<cuenta_str>();
+
+            foreach (cuenta item in data)
+            {
+                cuenta_str temp = new cuenta_str();
+                temp.ncta = item.ncta;
+                temp.saldo = item.saldo;
+                temp.cod_cliente = item.cod_cliente;
+                data2.Add(temp);
+            }
+            return Json(new { resultado = data2 }, JsonRequestBehavior.AllowGet);
+        }
+
+        // Crear clientes y cuentas de clientes
+
+        [HttpPost]
+        public JsonResult CrearCliente(cliente c)
+        {
+            try
+            {
+                contexto.cliente.Add(c);
+                contexto.SaveChanges();
+                return Json("Cliente creado!");
+            }
+            catch(Exception e)
+            {
+                return Json(e.Message);
+            }
+        }
+
+        [HttpPost]
+        public JsonResult CrearCuenta(cuenta c)
+        {
+            try
+            {
+                contexto.cuenta.Add(c);
+                contexto.SaveChanges();
+                return Json("Cuenta creada!");
+            }catch (Exception e)
+            {
+                return Json(e.Message);
+            }
+        }
+
+        // Structs de cliente y cuenta
+
+        struct cliente_str
+        {
+            public int cod_cliente { get; set; }
+            public string nombre_cliente { get; set; }
+            public string nit { get; set; }
+            public string rol { get; set; }
+        }
+        struct cuenta_str
+        {
+            public int ncta { get; set; }
+            public double? saldo { get; set; }
+            public int? cod_cliente { get; set; }
+        }
     }
 }
