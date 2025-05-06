@@ -215,7 +215,7 @@
       <DependentUpon>ModelBanca.edmx</DependentUpon>
     </Content>
     <Content Include="connectionStrings.config.example" />
-    <Content Include="connectionStrings.config" />
+    <None Include="connectionStrings.config" />
     <None Include="Dockerfile" />
     <None Include=".dockerignore">
       <DependentUpon>Dockerfile</DependentUpon>
