@@ -2,54 +2,173 @@
 @{
     ViewBag.Title = "EstadoCuenta";
     Layout = "~/Views/Shared/_Layout.cshtml";
-}
 
+    if (ViewBag.msjT != null)
+    {
+        switch (ViewBag.msjT)
+        {
+            case "retiro":
+                <script>alert("Retiro realizado con exito")</script>
+                break;
+            case "deposito":
+                <script>alert("Deposito realizado con exito")</script>
+                break;
+            case "SaldoIn":
+                <script>alert("Saldo insuficiente para realizar retiro")</script>
+                break;
+            case "limiteDiario":
+                <script>alert("Ha excedido el límite de 10 transacciones por día.")</script>
+                break;
+            case "Error: La cuenta especificada no pertenece a este cliente o no existe.":
+                <script>alert("Error: La cuenta especificada no pertenece a este cliente o no existe.")</script>
+                break;
+        }
+    }
+}
+@model Examen2_ds411.Models.transacciones
 
 <h2>EstadoCuenta</h2>
 
 <script>
-        $(document).ready(function () {
+    $(document).ready(function () {
+        $.ajax({
+            url: '@Url.Action("GetEstadoCuenta", "Cliente")',
+            dataType: "JSON",
+            type: "GET"
+        }).done(function (resultado) {
+            var cliente = resultado.resultado;
+            $("#txtNombre").text(cliente.nombreCliente);
+            $("#txtNIT").text(cliente.nit);
 
-            $.ajax({
-                url: '@Url.Action("GetEstadoCuenta", "Cuenta")',
-                dataType: "JSON",
-                type: "GET"
-            }).done(function (resultado) {
-                var data = JSON.parse(JSON.stringify(resultado));
-                $("#txtNumeroCuenta").text(data.resultado.numeroCuenta);
-                $("#txtNombre").text(data.resultado.nombreCliente);
-                $("#txtSaldo").text(data.resultado.saldo);
+            var cuentas = cliente.Cuentas;
+            var contenedor = $("#contenedorCuentas");
+            contenedor.empty();
 
-            }).fail(function () {
-                alert("Error");
+            cuentas.forEach(function (cuenta, index) {
+                var card = `
+                <div class=" mb-2 text-white">
+                    <div class="card shadow-sm bg-dark">
+                        <div class="card-header text-white">
+                            Cuenta: ${cuenta.numeroCuenta}
+                        </div>
+                        <div class="card-body">
+                            <h4 class="card-title "">$${cuenta.saldo.toFixed(2)}</h4>
+                            <sub>Saldo Disponible</sub><br><br>
+
+                            <button class="btn btn-success btn-sm" onclick="location.href='@Url.Action("TransaccionCliente", "Cliente")?tipo=retiro&n=${cuenta.numeroCuenta}'" >Hacer Retiro</button>
+
+                            <button class="btn btn-success btn-sm" onclick="location.href='@Url.Action("TransaccionCliente", "Cliente")?tipo=deposito&n=${cuenta.numeroCuenta}'" >Hacer Deposito</button>
+
+                            <button class="btn btn-info btn-sm ver_movimientos" data-index="${index}">Ver movimientos</button>
+                        </div>
+                    </div>
+                </div>
+                `;
+                contenedor.append(card);
             });
+
+            // Evento para mostrar transacciones de cada cuenta
+            $(".ver_movimientos").click(function () {
+                var index = $(this).data("index");
+                var transacciones = cuentas[index].Transacciones;
+                var ncta = cuentas[index].numeroCuenta;
+                mostrarTransacciones(transacciones, ncta);
+            });
+        }).fail(function () {
+            alert("Error al cargar estado de cuenta. error");
         });
+    });
+
+    function mostrarTransacciones(transacciones, numeroCuenta) {
+        var contenedor = $("#contenedorTransacciones");
+        contenedor.empty();
+
+        if (transacciones.length === 0) {
+            contenedor.append(`<h5>No hay movimientos para la cuenta ${numeroCuenta}</h5>`);
+            return;
+        }
+
+        contenedor.append(`<h5>Movimientos de la cuenta ${numeroCuenta}</h5>`);
+
+
+        transacciones.forEach(function (t) {
+
+            // --- INICIO MODIFICACIÓN ---
+            var fechaRecibida = t.fecha; // Esto es la cadena del JSON, ej: "/Date(1678886400000)/"
+            var fechaObjeto = null;
+
+            if (fechaRecibida && typeof fechaRecibida === 'string' && fechaRecibida.startsWith('/Date(')) {
+                var milliseconds = parseInt(fechaRecibida.substr(6)); // Extrae los milisegundos
+                if (!isNaN(milliseconds)) {
+                    fechaObjeto = new Date(milliseconds); // Crea el objeto Date a partir de milisegundos
+                }
+            }
+            // Si usaste Newtonsoft.Json en el servidor con ISO 8601, sería más simple:
+            // if (t.fecha) {
+            //     fechaObjeto = new Date(t.fecha); // JavaScript puede parsear ISO 8601 directamente
+            // }
+
+            // 2. Formatear el objeto Date a una cadena legible (ej: dd/mm/yyyy HH:mm)
+            var fechaFormateada = 'Fecha inválida'; // Valor por defecto si falla el parseo
+
+            if (fechaObjeto && !isNaN(fechaObjeto.getTime())) { // Verifica que sea un objeto Date válido
+                // Opciones de formato:
+                // a) Manual (ej: dd/mm/yyyy)
+                // var dia = fechaObjeto.getDate().toString().padStart(2, '0');
+                // var mes = (fechaObjeto.getMonth() + 1).toString().padStart(2, '0'); // getMonth() es base 0
+                // var anio = fechaObjeto.getFullYear();
+                // var horas = fechaObjeto.getHours().toString().padStart(2, '0');
+                // var minutos = fechaObjeto.getMinutes().toString().padStart(2, '0');
+                // fechaFormateada = `${dia}/${mes}/${anio} ${horas}:${minutos}`;
+
+                // b) Usando toLocaleDateString y toLocaleTimeString (más fácil, se adapta a la configuración local)
+                // Puedes especificar el locale si quieres un formato específico (ej: 'es-SV')
+                // Para solo fecha:
+                var opcionesFecha = { year: 'numeric', month: '2-digit', day: '2-digit' };
+                // Para solo hora:
+                var opcionesHora = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }; // hour12: false para formato 24h
+
+                var fechaStr = fechaObjeto.toLocaleDateString(undefined, opcionesFecha); // undefined usa el locale por defecto del navegador
+                var horaStr = fechaObjeto.toLocaleTimeString(undefined, opcionesHora);
+
+                fechaFormateada = `${fechaStr} ${horaStr}`;
+
+                // Si el campo en la base de datos es Nullable y llegó como null, t.fecha será null o undefined.
+                // En ese caso, el `if (fechaRecibida ...)` o `if(t.fecha)` fallará y fechaObjeto será null.
+                // Podemos manejarlo aquí:
+                if (!t.fecha) { // Si la fecha original del JSON es nula o undefined
+                    fechaFormateada = 'Fecha no registrada';
+                }
+
+            } else if (!t.fecha) { // Manejar explícitamente el caso nulo/undefined del servidor
+                fechaFormateada = 'Fecha no registrada';
+            }
+
+
+            // --- FIN MODIFICACIÓN ---
+
+            //-------------------------------------------------
+
+            var tarjeta = `
+            <div class="card mb-2">
+                <div class="card-body">
+                    <h6 class="text-${t.tipo === 'deposito' ? 'success' : 'danger'}">${t.tipo.toUpperCase()}</h6>
+                    <p class="mb-1">Monto: $${t.monto.toFixed(2)}</p>
+                    <p class="mb-0"><small>Fecha : ${fechaFormateada}</small></p>
+                </div>
+            </div>
+            `;
+            contenedor.append(tarjeta);
+        });
+    }
 </script>
-
-<div class="card">
-    <div class="card-header">
-        Estado de cuenta
-    </div>
-    <div class="card-body">
-        <h5 class="card-title" id="txtNumeroCuenta"></h5>
-        <pre id="txtNombre"></pre>
-        <p class="card-text text-success" id="txtSaldo">$ </p>
-        <sub> Saldo Disponible</sub>
-        <a href="#" class="btn btn-primary">Movimientos</a>
-    </div>
+<br />
+<div id="infoCliente" class="mb-4">
+    <h4 id="txtNombre"></h4>
+    <p><strong>NIT:</strong> <span id="txtNIT"></span></p>
 </div>
 
-<pre class="p-2">Transaciones</pre>
 
-<div class="card" id="Listatransaciones">
-    <div class="card-header">
-        Tipo de transacion
-    </div>
-    <div class="card-body">
-        <blockquote class="blockquote mb-0">
-            <p>Monto de trasaccion</p>
-            <footer class="blockquote-footer">Fecha <cite title="Source Title"></cite></footer>
-        </blockquote>
-    </div>
-</div>
+<div id="contenedorCuentas" class="row"></div>
 
+<div id="contenedorTransacciones" class="mt-4"></div>

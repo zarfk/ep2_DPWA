@@ -248,6 +248,7 @@
     <Content Include="Views\Login\Login.cshtml" />
     <Content Include="Views\Cliente\EstadoCuenta.cshtml" />
     <Content Include="Views\Admin\Cuenta.cshtml" />
+    <Content Include="Views\Cliente\TransaccionCliente.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

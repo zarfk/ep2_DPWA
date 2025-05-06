@@ -1,0 +1,42 @@
+﻿
+@{
+    ViewBag.Title = "TransaccionCliente";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int cod = int.Parse(TempData["cod_transac"].ToString());
+}
+
+
+@model Examen2_ds411.Models.transacciones
+
+<h2>Nueva @TempData["Tipo"]</h2>
+
+@using (Html.BeginForm("GuardarTransaccion", "Cliente", FormMethod.Post, new {id ="new { id = transactionForm"}))
+{
+    <div class="form-group">
+        @Html.LabelFor(t => t.cod_transac, htmlAttributes: new { @class = "Label" })
+        @Html.TextBoxFor(t => t.cod_transac, new { @Value = cod, id = "txtCodTransac", @class = "form-control", @readonly = "readonly" })
+
+
+        @Html.LabelFor(t => t.ncta, htmlAttributes: new { @class = "Label" })
+        @Html.TextBox("ncta", TempData["ncta"], new { @class = "form-control", @readonly = "readonly" })
+
+
+        @Html.LabelFor(t => t.monto, htmlAttributes: new { @class = "Label" })
+        @Html.TextBoxFor(t => t.monto, new { id = "txtMonto", @class = "form-control" })
+
+
+        @Html.LabelFor(t => t.tipo, htmlAttributes: new { @class = "Label" })
+        @Html.TextBox("tipo", TempData["Tipo"], new { @class = "form-control", @readonly = "readonly" })
+
+        @Html.LabelFor(t => t.fecha, htmlAttributes: new { @class = "Label" })
+        @Html.TextBox("fecha", DateTime.Now, new { @class = "form-control", @readonly = "readonly" })
+
+
+    </div>
+
+    <input type="submit" value="Guardar" class="btn btn-primary" />
+}
+
+
+
+
